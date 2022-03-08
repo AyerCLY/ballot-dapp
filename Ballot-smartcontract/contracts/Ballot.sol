@@ -4,8 +4,8 @@ pragma solidity ^0.8.0;
 
 contract Ballot{
     
-    uint256 YesCounter;
-    uint256 NoCounter;
+    uint256 YesCounter = 0;
+    uint256 NoCounter = 0;
     address public DAOOwner;
     string public proposal;
     event NewProposal(string name);

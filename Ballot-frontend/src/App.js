@@ -7,14 +7,13 @@ function App() {
   const [isBallotOwner, setIsBallotOwner] = useState(false);
   const [inputValue, setInputValue] = useState({ proposal: ""});
   const [BallotOwnerAddress, setBallotOwnerAddress] = useState(null);
-  const [customerAddress,setCustomerAddress] = useState(null);
   const [currentProposal, setCurrentProposal] = useState(null);
   const [votedYes, setVotedYes] = useState(null);
   const [votedNo, setVotedNo] = useState(null);
   const [VoterAddress, setVoterAddress] = useState(null);
   const [error, setError] = useState(null);
 
-  const contractAddress = '0xc635054A34926B7Ee7774E8502cA518789e17a01';
+  const contractAddress = '0xa87822C6F0c52ED2d274baF5085D9abeB425C0E9';
   const contractABI = abi.abi;
 
   const checkIfWalletIsConnected = async () => {
@@ -104,17 +103,39 @@ function App() {
   }
 
 //Vote yes
-  const VotedYesHandler = async () => {
+  const VotedYesHandler = async (event) => {
     try {
+      event.preventDefault();
       if (window.ethereum) {
+        console.log("inside Vote Yes handler");
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const BallotContract = new ethers.Contract(contractAddress, contractABI, signer);
 
         let txn = await BallotContract.voteYes();
         await txn.wait(); 
+        getVoteYesHandler();
+
+
+      } else {
+        console.log("Ethereum object not found, install Metamask.");
+        setError("Please install a MetaMask wallet to use our bank.");
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  //Vote yes
+  const getVoteYesHandler = async () => {
+    try {
+      if (window.ethereum) {
+        console.log("inside get Vote Yes handler");
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const BallotContract = new ethers.Contract(contractAddress, contractABI, signer);
         let yesCount = await BallotContract.getYesCount();
-        setVotedYes(yesCount);
+        setVotedYes(yesCount.toNumber());
         console.log("Voted yes count", yesCount);
 
       } else {
@@ -157,8 +178,7 @@ function App() {
     checkIfWalletIsConnected();
     getProposal();
     getBallotOwnerHandler();
-    VotedYesHandler()
-    VotedNoHandler()
+    getVoteYesHandler();
   }, [isWalletConnected])
 
   return (
