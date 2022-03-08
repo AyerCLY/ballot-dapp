@@ -14,7 +14,7 @@ function App() {
   const [VoterAddress, setVoterAddress] = useState(null);
   const [error, setError] = useState(null);
 
-  const contractAddress = '0x6f617D979a39856f73E5084de530c1b936d91940';
+  const contractAddress = '0xc635054A34926B7Ee7774E8502cA518789e17a01';
   const contractABI = abi.abi;
 
   const checkIfWalletIsConnected = async () => {
@@ -111,9 +111,11 @@ function App() {
         const signer = provider.getSigner();
         const BallotContract = new ethers.Contract(contractAddress, contractABI, signer);
 
-        let amount = await BallotContract.getVotedYes();
-        setVotedYes(utils.formatEther(amount));
-        console.log("Retrieved amount...", amount);
+        let txn = await BallotContract.voteYes();
+        await txn.wait(); 
+        let yesCount = await BallotContract.getYesCount();
+        setVotedYes(yesCount);
+        console.log("Voted yes count", yesCount);
 
       } else {
         console.log("Ethereum object not found, install Metamask.");
@@ -131,9 +133,11 @@ function App() {
         const signer = provider.getSigner();
         const BallotContract = new ethers.Contract(contractAddress, contractABI, signer);
 
-        let _amount = await BallotContract.getVotedNo();
-        setVotedNo(utils.formatEther(_amount));
-        console.log("Retrieved amount...", _amount);
+        let txn = await BallotContract.voteNo();
+        await txn.wait(); 
+        let noCount = await BallotContract.getNoCount();
+        setVotedNo(noCount);
+        console.log("Voted no count", noCount);
 
       } else {
         console.log("Ethereum object not found, install Metamask.");

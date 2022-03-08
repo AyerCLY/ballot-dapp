@@ -3,10 +3,14 @@
 pragma solidity ^0.8.0;
 
 contract Ballot{
-
+    
+    uint256 YesCounter;
+    uint256 NoCounter;
     address public DAOOwner;
     string public proposal;
     event NewProposal(string name);
+    event votedYes (address voter); //who voted yes
+    event votedNo (address voter);//who voted no
 
     constructor() {
         DAOOwner = msg.sender;
@@ -18,20 +22,19 @@ contract Ballot{
         emit NewProposal(_proposal);
     }
 
-    mapping(string => uint256) Yes;
-    function voteYes(string memory yes) public {
-        Yes[yes]++;
+    function voteYes() public {
+        YesCounter++;
+        emit votedYes(msg.sender);
     }
-    function getYesCount(string memory yes) public view returns (uint256) {
-        return Yes[yes];
+    function getYesCount() public view returns (uint256) {
+        return YesCounter;
     }
-
-    mapping(string => uint256) No;
-    function voteNo(string memory no) public {
-        No[no]++;
+    function voteNo() public {
+        NoCounter++;
+        emit votedNo(msg.sender);
     }
-    function getNoCount(string memory no) public view returns (uint256) {
-        return No[no];
+    function getNoCount() public view returns (uint256) {
+        return NoCounter;
     }
 
 }
