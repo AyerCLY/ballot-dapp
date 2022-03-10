@@ -149,16 +149,17 @@ function App() {
 //Vote No
   const VotedNoHandler = async () => {
     try {
+      event.preventDefault();
       if (window.ethereum) {
+        console.log("inside Vote No handler");
         const provider = new ethers.providers.Web3Provider(window.ethereum);
         const signer = provider.getSigner();
         const BallotContract = new ethers.Contract(contractAddress, contractABI, signer);
 
         let txn = await BallotContract.voteNo();
         await txn.wait(); 
-        let noCount = await BallotContract.getNoCount();
-        setVotedNo(noCount);
-        console.log("Voted no count", noCount);
+        getVoteNoHandler();
+
 
       } else {
         console.log("Ethereum object not found, install Metamask.");
@@ -168,6 +169,27 @@ function App() {
       console.log(error)
     }
   }
+
+  //Vote No
+  const getVoteNoHandler = async () => {
+    try {
+      if (window.ethereum) {
+        console.log("inside get Vote No handler");
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
+        const BallotContract = new ethers.Contract(contractAddress, contractABI, signer);
+        let noCount = await BallotContract.getNoCount();
+        setVotedNo(noCount.toNumber());
+        console.log("Voted no count", noCount);
+
+      } else {
+        console.log("Ethereum object not found, install Metamask.");
+        setError("Please install a MetaMask wallet to use our bank.");
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  } 
 
   const handleInputChange = (event) => {
     setInputValue(prevFormData => ({ ...prevFormData, [event.target.name]: event.target.value }));
