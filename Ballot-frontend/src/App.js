@@ -13,7 +13,7 @@ function App() {
   const [VoterAddress, setVoterAddress] = useState(null);
   const [error, setError] = useState(null);
 
-  const contractAddress = '0xa87822C6F0c52ED2d274baF5085D9abeB425C0E9';
+  const contractAddress = '0x2dE4244a769875105944F32cc65183535b61326c';
   const contractABI = abi.abi;
 
   const checkIfWalletIsConnected = async () => {
@@ -146,8 +146,9 @@ function App() {
       console.log(error)
     }
   }
+
 //Vote No
-  const VotedNoHandler = async () => {
+  const VotedNoHandler = async (event) => {
     try {
       event.preventDefault();
       if (window.ethereum) {
@@ -195,12 +196,12 @@ function App() {
     setInputValue(prevFormData => ({ ...prevFormData, [event.target.name]: event.target.value }));
   }
 
-
   useEffect(() => {
     checkIfWalletIsConnected();
     getProposal();
     getBallotOwnerHandler();
     getVoteYesHandler();
+    getVoteNoHandler();
   }, [isWalletConnected])
 
   return (
